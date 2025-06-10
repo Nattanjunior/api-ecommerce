@@ -1,12 +1,35 @@
 import { Controller, Get } from '@nestjs/common';
-import { ProductServiceService } from './product-service.service';
+import { ProductService } from './product-service.service';
+import { MessagePattern, Payload } from '@nestjs/microservices'
+import { CreateProductDto } from 'lib/dtos/dto-product-service/create-product-dto';
+import { UpdateProductDto } from 'lib/dtos/dto-product-service/update-product-dto';
 
 @Controller()
 export class ProductServiceController {
-  constructor(private readonly productServiceService: ProductServiceService) {}
+  constructor(private readonly ProductService: ProductService) { }
 
-  @Get()
-  getHello(): string {
-    return this.productServiceService.getHello();
+  @MessagePattern({ cmd: 'find-all-products' })
+  findAllProducts() {
+    return this.ProductService.findAllProducts();
+  } 
+
+  @MessagePattern({ cmd: 'find-product' })
+  findProduct(@Payload() id: string) {
+    return this.ProductService.findProduct(id);
+  }
+
+  @MessagePattern({ cmd: 'create-product' })
+  createProduct(@Payload() data: CreateProductDto) {
+    return this.ProductService.createProduct(data);
+  }
+
+  @MessagePattern({ cmd: 'update-product' })
+  updateProduct(@Payload() payload: { id: string; data: UpdateProductDto }) {
+    return this.ProductService.updateProduct(payload.id, payload.data);
+  }
+
+  @MessagePattern({ cmd: 'delete-product' })
+  deletteProduct(@Payload() id: string) {
+    return this.ProductService.deleteProduct(id);
   }
 }

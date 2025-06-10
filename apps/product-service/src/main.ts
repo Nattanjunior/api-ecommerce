@@ -1,8 +1,20 @@
 import { NestFactory } from '@nestjs/core';
-import { ProductServiceModule } from './product-service.module';
+import { AppModule } from '../../app.module';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
-  const app = await NestFactory.create(ProductServiceModule);
-  await app.listen(process.env.port ?? 3000);
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
+    transport: Transport.RMQ,
+    options: {
+      urls: ['amqp://localhost:5672'],
+      queue: 'product-service',
+      queueOptions: {
+        durable: false,
+      },
+    },
+  });
+
+  await app.listen();
+  console.log('Product Service is listening to RabbitMQ');
 }
 bootstrap();
