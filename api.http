@@ -7,3 +7,152 @@ Content-Type: application/json
     "description": "test",
     "stock": 50
 }
+
+###
+# @name createProduct
+POST http://localhost:3000/products
+Content-Type: application/json
+
+{
+    "name": "Novo Produto Exemplo",
+    "description": "Uma descrição detalhada do novo produto.",
+    "price": 129.99,
+    "stock": 150
+}
+
+###
+# @name updateProduct
+PUT http://localhost:3000/products/{{$randomUUID}}
+Content-Type: application/json
+
+{
+    "price": 139.99,
+    "stock": 140
+}
+
+###
+# @name createUser
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+    "name": "Usuário Teste",
+    "email": "usuario.teste@example.com",
+    "password": "senhaSegura123"
+}
+
+###
+# @name updateUser
+PUT http://localhost:3000/users/{{$randomUUID}}
+Content-Type: application/json
+
+{
+    "email": "novo.email@example.com"
+}
+
+###
+# @name createCart
+POST http://localhost:3000/carts
+Content-Type: application/json
+
+{
+    "userId": "{{$randomUUID}}",
+    "items": [
+        {
+            "productId": "{{$randomUUID}}",
+            "quantity": 2
+        },
+        {
+            "productId": "{{$randomUUID}}",
+            "quantity": 1
+        }
+    ]
+}
+
+###
+# @name updateCart
+PUT http://localhost:3000/carts/{{$randomUUID}}
+Content-Type: application/json
+
+{
+    "items": [
+        {
+            "productId": "{{$randomUUID}}",
+            "quantity": 3
+        }
+    ]
+}
+
+###
+# @name createOrder
+POST http://localhost:3000/orders
+Content-Type: application/json
+
+{
+    "userId": "{{$randomUUID}}",
+    "total": 250.00,
+    "status": "PENDING",
+    "items": [
+        {
+            "productId": "{{$randomUUID}}",
+            "quantity": 1,
+            "price": 100.00
+        },
+        {
+            "productId": "{{$randomUUID}}",
+            "quantity": 2,
+            "price": 75.00
+        }
+    ]
+}
+
+###
+# @name updateOrder
+PUT http://localhost:3000/orders/{{$randomUUID}}
+Content-Type: application/json
+
+{
+    "status": "PROCESSING",
+    "total": 260.00
+}
+
+###
+# @name createNotification
+POST http://localhost:3000/notifications
+Content-Type: application/json
+
+{
+    "userId": "{{$randomUUID}}",
+    "message": "Seu pedido #12345 foi enviado!",
+    "isRead": false
+}
+
+###
+# @name updateNotification
+PUT http://localhost:3000/notifications/{{$randomUUID}}
+Content-Type: application/json
+
+{
+    "isRead": true
+}
+
+###
+# @name createPayment
+POST http://localhost:3000/payments
+Content-Type: application/json
+
+{
+    "orderId": "{{$randomUUID}}",
+    "amount": 250.00,
+    "currency": "BRL",
+    "status": "PENDING"
+}
+
+###
+# @name updatePayment
+PUT http://localhost:3000/payments/{{$randomUUID}}
+Content-Type: application/json
+
+{
+    "status": "COMPLETED"
+}
