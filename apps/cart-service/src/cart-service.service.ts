@@ -1,9 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { PrismaService } from 'apps/prisma/prisma.service';
 import { CreateCartDto } from 'lib/dtos/dto-cart-service/create-cart-dto';
 import { UpdateCartDto } from 'lib/dtos/dto-cart-service/update-cart-dto';
 import { CreateCartItemDto } from 'lib/dtos/dto-cart-service/create-cart-item-dto';
 import { UpdateCartItemDto } from 'lib/dtos/dto-cart-service/update-cart-item-dto';
+import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 
 /**
  * Serviço responsável pelas operações de carrinho de compras.
@@ -11,7 +13,10 @@ import { UpdateCartItemDto } from 'lib/dtos/dto-cart-service/update-cart-item-dt
  */
 @Injectable()
 export class CartServiceService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @Inject('NOTIFICATION_SERVICE') private readonly notificationClient: ClientProxy,
+  ) {}
 
   /**
    * Cria um novo carrinho para o usuário.
@@ -48,6 +53,8 @@ export class CartServiceService {
     let cart = await this.prisma.cart.findFirst({ where: { userId }, include: { items: true } });
     if (!cart) {
       cart = await this.createCart({ userId, items: [item] });
+      // Notificar item adicionado
+      await firstValueFrom(this.notificationClient.emit({ cmd: 'notify-cart-item-added' }, { userId, item }));
       return cart;
     }
     // Se o item já existe, atualiza a quantidade
@@ -66,6 +73,8 @@ export class CartServiceService {
         },
       });
     }
+    // Notificar item adicionado
+    await firstValueFrom(this.notificationClient.emit({ cmd: 'notify-cart-item-added' }, { userId, item }));
     return this.getCartByUser(userId);
   }
 
@@ -78,6 +87,8 @@ export class CartServiceService {
     await this.prisma.cartItem.deleteMany({
       where: { cartId: cart.id, productId },
     });
+    // Notificar item removido
+    await firstValueFrom(this.notificationClient.emit({ cmd: 'notify-cart-item-removed' }, { userId, productId }));
     return this.getCartByUser(userId);
   }
 
