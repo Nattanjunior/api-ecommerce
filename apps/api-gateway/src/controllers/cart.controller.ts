@@ -1,34 +1,48 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, Body, Query } from '@nestjs/common';
 import { CartService } from '../services/cart.service';
 import { CreateCartDto } from 'lib/dtos/dto-cart-service/create-cart-dto';
-import { UpdateCartDto } from 'lib/dtos/dto-cart-service/update-cart-dto';
+import { CreateCartItemDto } from 'lib/dtos/dto-cart-service/create-cart-item-dto';
+import { ApiTags, ApiOperation, ApiParam, ApiBody } from '@nestjs/swagger';
 
-@Controller('carts')
+@ApiTags('Carrinho')
+@Controller('cart')
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 
-  @Get()
-  findAll() {
-    return this.cartService.findAllCarts();
+  @ApiOperation({ summary: 'Buscar carrinho do usuário' })
+  @ApiParam({ name: 'userId', required: true })
+  @Get(':userId')
+  getCartByUser(@Param('userId') userId: string) {
+    return this.cartService.getCartByUser(userId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cartService.findCart(id);
-  }
-
+  @ApiOperation({ summary: 'Criar carrinho para usuário' })
+  @ApiBody({ type: CreateCartDto })
   @Post()
-  create(@Body() createCartDto: CreateCartDto) {
+  createCart(@Body() createCartDto: CreateCartDto) {
     return this.cartService.createCart(createCartDto);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateCartDto: UpdateCartDto) {
-    return this.cartService.updateCart(id, updateCartDto);
+  @ApiOperation({ summary: 'Adicionar item ao carrinho' })
+  @ApiParam({ name: 'userId', required: true })
+  @ApiBody({ type: CreateCartItemDto })
+  @Post(':userId/item')
+  addItemToCart(@Param('userId') userId: string, @Body() item: CreateCartItemDto) {
+    return this.cartService.addItemToCart(userId, item);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cartService.deleteCart(id);
+  @ApiOperation({ summary: 'Remover item do carrinho' })
+  @ApiParam({ name: 'userId', required: true })
+  @ApiParam({ name: 'productId', required: true })
+  @Delete(':userId/item/:productId')
+  removeItemFromCart(@Param('userId') userId: string, @Param('productId') productId: string) {
+    return this.cartService.removeItemFromCart(userId, productId);
+  }
+
+  @ApiOperation({ summary: 'Limpar carrinho do usuário' })
+  @ApiParam({ name: 'userId', required: true })
+  @Delete(':userId')
+  clearCart(@Param('userId') userId: string) {
+    return this.cartService.clearCart(userId);
   }
 } 
