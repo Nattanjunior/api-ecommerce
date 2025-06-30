@@ -58,6 +58,15 @@
         "tsConfigPath": "apps/product-service/tsconfig.app.json"
       }
     },
+    "rabbitmq": {
+      "type": "application",
+      "root": "apps/rabbitmq",
+      "entryFile": "main",
+      "sourceRoot": "apps/rabbitmq/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/rabbitmq/tsconfig.app.json"
+      }
+    },
     "user-service": {
       "type": "application",
       "root": "apps/user-service",
