@@ -16,6 +16,14 @@ export class OrderService {
     return await firstValueFrom(this.orderClient.send({ cmd: 'find-order' }, id));
   }
 
+  async listOrdersByUser(userId: string) {
+    return await firstValueFrom(this.orderClient.send({ cmd: 'list-orders-by-user' }, userId));
+  }
+
+  async getOrderById(id: string) {
+    return await firstValueFrom(this.orderClient.send({ cmd: 'get-order-by-id' }, id));
+  }
+
   async createOrder(data: CreateOrderDto) {
     return await firstValueFrom(this.orderClient.send({ cmd: 'create-order' }, data));
   }
